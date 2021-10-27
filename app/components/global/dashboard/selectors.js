@@ -45,16 +45,16 @@ const getPositionByActivity = (teamData, activity) =>
     }));
 
 const getPositionByMemberActivity = (memberData, activity) => {
-  const activityName = activity.replace(/total/g, "");
+  activity.substr(5)
   return memberData
     .sort((a, b) => b[activity] - a[activity])
     .map((member, idx) => ({
       ...member,
       activities: {
         ...member.activities,
-        [activityName]: member[activity],
+        [activity.substr(5)]: member[activity],
         [`${
-          activityName.charAt(0).toLowerCase() + activityName.slice(1)
+          activity.substr(5).charAt(0).toLowerCase() + activity.substr(5).slice(1)
         }Position`]: idx + 1,
       },
     }));
@@ -106,18 +106,9 @@ const levelsSelector = createSelector([levelsListSelector], (levels) => {
   } else [];
 });
 
-const removeDuplicates = (membersList) =>
-  membersList.filter(
-    (member, index, self) =>
-      index === self.findIndex((m) => m.name === member.name)
-  );
-
-const personalSelector = createSelector([teamsListSelector], (teamsList) => {
-  if (teamsList) {
-    let membersData = removeDuplicates(
-      teamsList.toJS().flatMap((team) => team.members)
-    );
-
+const personalSelector = createSelector([activitiesSelector], (users) => {
+  if (users) {
+    let userData = users.toJS();
     [
       "totalRun",
       "totalSwim",
@@ -125,10 +116,10 @@ const personalSelector = createSelector([teamsListSelector], (teamsList) => {
       "totalRowing",
       "totalCyclingConverted",
     ].map((activity) => {
-      return (membersData = getPositionByMemberActivity(membersData, activity));
+      return (userData = getPositionByMemberActivity(userData, activity));
     });
 
-    return membersData
+    return userData
       .sort((a, b) => b.totalDistanceConverted - a.totalDistanceConverted)
       .map((member, idx) => ({ ...member, position: idx + 1 }));
   } else [];

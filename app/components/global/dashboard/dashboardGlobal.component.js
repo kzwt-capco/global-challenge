@@ -291,7 +291,7 @@ class DashboardGlobal extends React.Component {
                       loading={isSearchLoading}
                       onSearchChange={this.handleSearchChange}
                       value={value}
-                      placeholder={"Search Team Name"}
+                      placeholder={"Search here"}
                     />
                   </div>
                   <TeamLeaderboardTable
